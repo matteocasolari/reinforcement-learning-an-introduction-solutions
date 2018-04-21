@@ -104,7 +104,6 @@ class PolicyIteration:
             policy_stable = True
             for s in self.S:
                 old_action = self.pi[s]
-                self.pi[s] = self.A(s)[np.argmax([self.V_eval(s, a) for a in self.A(s)])]
                 values = {a: self.V_eval(s, a) for a in self.A(s)}
                 self.pi[s] = np.random.choice([a for a, value in values.items()
                                                if value == np.max(list(values.values()))])
