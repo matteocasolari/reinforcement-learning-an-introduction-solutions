@@ -35,7 +35,7 @@ class Params:
         self.n = 5
 
         # Average over several independent runs
-        self.runs = 10
+        self.runs = 20
 
         # Algorithm names
         self.methods = ['Dyna-Q', 'Dyna-Q+', 'Alternative-Dyna-Q+']
@@ -44,7 +44,7 @@ class Params:
         self.steps = 3000
 
         # Max number of steps of one episode, in sample mode
-        self.max_steps = 1000
+        self.max_steps = 100
 
         # Steps after which the maze change from the initial one
         self.changing_steps = 1000
@@ -176,15 +176,11 @@ class TabularDynaQ:
 
                         # Actions already tried from chosen state
                         if self.model[p_state[0], p_state[1], p_action] is not None:
-                            time_state_action = self.time[p_state[0], p_state[1], p_action]
                             p_new_state, p_reward = self.model[p_state[0], p_state[1], p_action]
 
                         # Actions that had never been tried before from chosen state
                         else:
-                            time_state_action = 0
                             p_new_state, p_reward = p_state, 0
-
-                        p_reward += self.params.k * np.sqrt(time - time_state_action)
 
                         # Q-Learning update
                         self.Q[p_state[0], p_state[1], p_action] += self.params.alpha * (
@@ -203,7 +199,7 @@ class TabularDynaQ:
 
         return rewards
 
-    def sample_episode(self, method, save=False):
+    def sample_episode(self, method):
         """
         Sample one episode, generated using the last instance of Q
         :param method: method used to solve the maze
@@ -286,5 +282,3 @@ def exercise8_4():
     plt.show()
 
 exercise8_4()
-
-# TODO REMEMBER, ON GITHUB DELETE THE "SAVE" MODE
