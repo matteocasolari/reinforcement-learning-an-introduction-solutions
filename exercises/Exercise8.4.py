@@ -244,6 +244,8 @@ def show_results(results):
         rewards, method = result
         plt.plot(rewards, label=method)
     plt.legend(loc='upper left')
+    plt.xlabel('Time steps')
+    plt.ylabel('Cumulative reward')
 
 
 def exercise8_4():
