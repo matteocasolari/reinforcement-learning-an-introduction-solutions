@@ -29,25 +29,25 @@ class Params:
         self.alpha = 0.7
 
         # Weight for elapsed time
-        self.k = 1e-4
+        self.k = 1e-3
 
         # n-step planning
-        self.n = 5
+        self.n = 50
 
         # Average over several independent runs
-        self.runs = 20
+        self.runs = 5
 
         # Algorithm names
-        self.methods = ['Dyna-Q', 'Dyna-Q+', 'Alternative-Dyna-Q+']
+        self.methods = ['Dyna-Q+', 'Alternative-Dyna-Q+']#['Dyna-Q', 'Dyna-Q+', 'Alternative-Dyna-Q+']
 
         # Step number
-        self.steps = 3000
+        self.steps = 6000
 
         # Max number of steps of one episode, in sample mode
         self.max_steps = 100
 
         # Steps after which the maze change from the initial one
-        self.changing_steps = 1000
+        self.changing_steps = 3000
 
 
 # A wrapper class for Dyna-Q algorithm
@@ -70,20 +70,36 @@ class TabularDynaQ:
         self.model = np.empty((self.maze.MAZE_HEIGHT, self.maze.MAZE_WIDTH, len(self.maze.actions)), dtype=list)
 
         # Initial time values, for Q+ algorithm
-        self.time = np.zeros((self.maze.MAZE_HEIGHT, self.maze.MAZE_WIDTH, len(self.maze.actions)))
+        self.time = 0
+        self.times = np.zeros((self.maze.MAZE_HEIGHT, self.maze.MAZE_WIDTH, len(self.maze.actions)))
 
-    def choose_action(self, state, deterministic=False):
+    def choose_action(self, state, method,deterministic=False):
         """
         Choose an action based on epsilon-greedy algorithm or deterministically from state
         :param state: state where the action is taken
+        :param method: method implemented for the solution
         :param deterministic: if the action is chosen deterministically with respect to Q (default False)
         :return: chosen action
         """
-        if np.random.binomial(1, self.params.epsilon) == 1 and not deterministic:
-            return random.choice(self.maze.actions)
-        else:
-            values = self.Q[state[0], state[1], :]
-            return random.choice([action for action, value in enumerate(values) if value == np.max(values)])
+        # Dyna-Q or Dyna-Q+ methods, standard action selection
+        if method == 'Dyna-Q' or method == 'Dyna-Q+':
+            if np.random.binomial(1, self.params.epsilon) == 1 and not deterministic:
+                return random.choice(self.maze.actions)
+            else:
+                values = self.Q[state[0], state[1], :]
+                return random.choice([action for action, value in enumerate(values) if value == np.max(values)])
+
+        # Alternative Dyna-Q+ methods, action selection based on time too
+        elif method == 'Alternative-Dyna-Q+':
+            if np.random.binomial(1, self.params.epsilon) == 1 and not deterministic:
+                return random.choice(self.maze.actions)
+            elif not deterministic:
+                values = self.Q[state[0], state[1], :] + \
+                         self.params.k * np.sqrt(self.time - self.times[state[0], state[1], :])
+                return random.choice([action for action, value in enumerate(values) if value == np.max(values)])
+            else:
+                values = self.Q[state[0], state[1], :]
+                return random.choice([action for action, value in enumerate(values) if value == np.max(values)])
 
     def resolve_maze(self, method):
         """
@@ -94,7 +110,6 @@ class TabularDynaQ:
         # reset all variables, and set maze to initial one
         steps = 0
         reward_ = 0
-        time = 0
         rewards = np.zeros(self.params.steps)
         self.maze.init_maze()
 
@@ -110,7 +125,7 @@ class TabularDynaQ:
                 steps += 1
 
                 # Get action
-                action = self.choose_action(state)
+                action = self.choose_action(state, method)
 
                 # Take action
                 new_state, reward = self.maze.take_action(state, action)
@@ -124,8 +139,8 @@ class TabularDynaQ:
                 self.model[state[0], state[1], action] = [new_state, reward]
 
                 # Update time table
-                time += 1
-                self.time[state[0], state[1], action] = time
+                self.time += 1
+                self.times[state[0], state[1], action] = self.time
 
                 # Sample experience from the model
                 for _ in range(self.params.n):
@@ -134,8 +149,8 @@ class TabularDynaQ:
                         [[i, j] for i in np.arange(self.maze.MAZE_HEIGHT) for j in np.arange(self.maze.MAZE_WIDTH)
                          if not all(v is None for v in self.model[i, j, :])])
 
-                    # Dyna-Q method
-                    if method == 'Dyna-Q':
+                    # Dyna-Q or Alternative Dyna-Q+ methods
+                    if method == 'Dyna-Q' or method == 'Alternative-Dyna-Q+':
                         # Planning action randomly chosen between previously taken ones in this state
                         p_action = random.choice(
                             [a for a in self.maze.actions if self.model[p_state[0], p_state[1], a] is not None])
@@ -154,39 +169,19 @@ class TabularDynaQ:
 
                         # Actions already tried from chosen state
                         if self.model[p_state[0], p_state[1], p_action] is not None:
-                            time_state_action = self.time[p_state[0], p_state[1], p_action]
                             p_new_state, p_reward = self.model[p_state[0], p_state[1], p_action]
 
                         # Actions that had never been tried before from chosen state
                         else:
-                            time_state_action = 0
                             p_new_state, p_reward = p_state, 0
 
-                        p_reward += self.params.k * np.sqrt(time - time_state_action)
+                        p_reward += self.params.k * np.sqrt(self.time - self.times[p_state[0], p_state[1], p_action])
 
                         # Q-Learning update
                         self.Q[p_state[0], p_state[1], p_action] += self.params.alpha * (
                             p_reward + self.params.gamma * np.max(self.Q[p_new_state[0], p_new_state[1], :])
                             - self.Q[p_state[0], p_state[1], p_action])
 
-                    # Alternative Dyna-Q+ method
-                    elif method == 'Alternative-Dyna-Q+':
-                        # Planning action randomly chosen between all actions
-                        p_action = random.choice(self.maze.actions)
-
-                        # Actions already tried from chosen state
-                        if self.model[p_state[0], p_state[1], p_action] is not None:
-                            p_new_state, p_reward = self.model[p_state[0], p_state[1], p_action]
-
-                        # Actions that had never been tried before from chosen state
-                        else:
-                            p_new_state, p_reward = p_state, 0
-
-                        # Q-Learning update
-                        self.Q[p_state[0], p_state[1], p_action] += self.params.alpha * (
-                            p_reward + self.params.gamma * np.max([self.Q[p_new_state[0], p_new_state[1], a]
-                                        + self.params.k * np.sqrt(time - self.time[p_state[0], p_state[1], a]) for a
-                                        in self.maze.actions]) - self.Q[p_state[0], p_state[1], p_action])
                 state = new_state
 
             # Update rewards vector
@@ -211,7 +206,7 @@ class TabularDynaQ:
 
         while states[steps] not in self.maze.get_state_locations(self.maze.GOAL_STATE) and steps < self.params.max_steps:
             # Get action
-            action = self.choose_action(states[steps], deterministic=True)
+            action = self.choose_action(states[steps], method, deterministic=True)
 
             # Take action
             new_state, _ = self.maze.take_action(states[steps], action)
@@ -247,7 +242,7 @@ def show_results(results):
 
 def exercise8_4():
     # Set up a maze instance, possible maze types ['type0', 'type1', 'type2', 'type3']
-    maze = Maze('type1')
+    maze = Maze('type2')
 
     # Set up parameters
     params = Params()
