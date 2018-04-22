@@ -38,7 +38,7 @@ class Params:
         self.runs = 5
 
         # Algorithm names
-        self.methods = ['Dyna-Q+', 'Alternative-Dyna-Q+']#['Dyna-Q', 'Dyna-Q+', 'Alternative-Dyna-Q+']
+        self.methods = ['Dyna-Q', 'Dyna-Q+', 'Alternative-Dyna-Q+']
 
         # Step number
         self.steps = 6000
