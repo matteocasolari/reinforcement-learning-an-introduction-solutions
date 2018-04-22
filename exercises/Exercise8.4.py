@@ -29,25 +29,25 @@ class Params:
         self.alpha = 0.7
 
         # Weight for elapsed time
-        self.k = 1e-3
+        self.k = 1e-4
 
         # n-step planning
-        self.n = 50
+        self.n = 5
 
         # Average over several independent runs
-        self.runs = 5
+        self.runs = 20
 
         # Algorithm names
         self.methods = ['Dyna-Q', 'Dyna-Q+', 'Alternative-Dyna-Q+']
 
         # Step number
-        self.steps = 6000
+        self.steps = 3000
 
         # Max number of steps of one episode, in sample mode
         self.max_steps = 100
 
         # Steps after which the maze change from the initial one
-        self.changing_steps = 3000
+        self.changing_steps = 1000
 
 
 # A wrapper class for Dyna-Q algorithm
@@ -242,7 +242,7 @@ def show_results(results):
 
 def exercise8_4():
     # Set up a maze instance, possible maze types ['type0', 'type1', 'type2', 'type3']
-    maze = Maze('type2')
+    maze = Maze('type1')
 
     # Set up parameters
     params = Params()
