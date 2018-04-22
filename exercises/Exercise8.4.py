@@ -73,7 +73,7 @@ class TabularDynaQ:
         self.time = 0
         self.times = np.zeros((self.maze.MAZE_HEIGHT, self.maze.MAZE_WIDTH, len(self.maze.actions)))
 
-    def choose_action(self, state, method,deterministic=False):
+    def choose_action(self, state, method, deterministic=False):
         """
         Choose an action based on epsilon-greedy algorithm or deterministically from state
         :param state: state where the action is taken
