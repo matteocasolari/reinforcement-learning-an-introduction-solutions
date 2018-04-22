@@ -52,7 +52,7 @@ class Maze:
             self.initial_file_name = os.path.join(absolute_path, 'maze.csv')
             self.changed_file_name = None
 
-        self.load_maze_from_csv(self.initial_file_name)
+        self.init_maze()
 
     def take_action(self, state, action):
         """
@@ -102,6 +102,12 @@ class Maze:
         """
         if self.changed_file_name is not None:
             self.load_maze_from_csv(self.changed_file_name)
+
+    def init_maze(self):
+        """
+        Initialize the maze
+        """
+        self.load_maze_from_csv(self.initial_file_name)
 
     def get_state_locations(self, state_type):
         """

@@ -91,11 +91,12 @@ class TabularDynaQ:
         :param method: method implemented for the solution
         :return: average cumulative rewards over different runs
         """
-        # reset all variables
+        # reset all variables, and set maze to initial one
         steps = 0
         reward_ = 0
         time = 0
         rewards = np.zeros(self.params.steps)
+        self.maze.init_maze()
 
         has_changed = False
 
@@ -202,7 +203,7 @@ class TabularDynaQ:
 
         return rewards
 
-    def sample_episode(self, method):
+    def sample_episode(self, method, save=False):
         """
         Sample one episode, generated using the last instance of Q
         :param method: method used to solve the maze
@@ -250,7 +251,7 @@ def show_results(results):
 
 def exercise8_4():
     # Set up a maze instance, possible maze types ['type0', 'type1', 'type2', 'type3']
-    maze = Maze('type0')
+    maze = Maze('type1')
 
     # Set up parameters
     params = Params()
@@ -285,3 +286,5 @@ def exercise8_4():
     plt.show()
 
 exercise8_4()
+
+# TODO REMEMBER, ON GITHUB DELETE THE "SAVE" MODE
