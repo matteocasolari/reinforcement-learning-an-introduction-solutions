@@ -53,11 +53,17 @@ Implementation of the solution of Exercise 5.10
 
 [Code](exercises/Exercise5.10.py)
 
-![exercise5.10](samples/exercise5.10/type1.gif)
-![exercise5.10](samples/exercise5.10/type2_1.gif)
+![exercise5.10 type 1](samples/exercise5.10/type1.gif)
+![exercise5.10 type 2](samples/exercise5.10/type2_1.gif)
 
 
 ### Exercise 8.4
 Implementation of the solution of Exercise 8.4
 
 [Code](exercises/Exercise8.4.py)
+
+Blocking Maze
+![exercise8.4 type 1](samples/exercise8.4/type1_cumulative_reward.png)
+
+Shortcut Maze
+![exercise8.4 type 2](samples/exercise8.4/type2_cumulative_reward.png)
