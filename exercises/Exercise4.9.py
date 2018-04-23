@@ -119,6 +119,8 @@ class ValueIteration:
 
 
 def exercise4_9():
+    print('Exercise 4.9')
+
     # Set up parameters
     params = Params()
 

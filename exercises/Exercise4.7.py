@@ -231,6 +231,8 @@ class PolicyIteration:
 
 
 def exercise4_7():
+    print('Exercise 4.7')
+
     # Set up parameters
     params = Params()
 

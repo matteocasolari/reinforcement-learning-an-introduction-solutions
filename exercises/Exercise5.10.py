@@ -189,6 +189,8 @@ class OffPolicyMonteCarlo:
 
 
 def exercise5_10():
+    print('Exercise 5.10')
+
     # Set up a track instance, possible track types ['type0', 'type1', 'type2', 'type3']
     track = Track('type1')
 

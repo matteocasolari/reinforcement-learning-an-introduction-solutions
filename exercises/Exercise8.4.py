@@ -241,6 +241,8 @@ def show_results(results):
 
 
 def exercise8_4():
+    print('Exercise 8.4')
+
     # Set up a maze instance, possible maze types ['type0', 'type1', 'type2', 'type3']
     maze = Maze('type1')
 

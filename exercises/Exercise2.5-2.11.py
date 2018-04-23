@@ -228,6 +228,8 @@ def show_results2_11(bandit_types, ARs, params):
 
 
 def exercise2_5():
+    print('Exercise 2.5')
+
     # Set up parameters
     params = Params()
 
@@ -239,6 +241,8 @@ def exercise2_5():
     POAs = []
 
     for bandit_type in params.bandit_types:
+        print('Method', bandit_type)
+
         # Average Reward
         AR = []
 
@@ -267,6 +271,9 @@ def exercise2_5():
 
 
 def exercise2_11():
+    print('Exercise 2.11')
+
+    # Set up parameters
     params = Params()
 
     params.m = 200
@@ -277,6 +284,8 @@ def exercise2_11():
     ARs = []
 
     for bandit_type in params.bandit_types:
+        print('Method', bandit_type)
+
         # Average Rewards for bandits with a different variable
         ARs_ = []
 
