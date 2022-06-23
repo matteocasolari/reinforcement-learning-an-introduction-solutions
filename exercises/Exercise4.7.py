@@ -158,7 +158,7 @@ class PolicyIteration:
             if a > 0:
                 a -= 1
             cost = self.params.cost_per_car * abs(a) + self.params.cost_per_slot_night * (
-                1 if s_first > self.params.max_car / 2 else 0 + 1 if s_second > self.params.max_car / 2 else 0)
+                (1 if s_first > self.params.max_car / 2 else 0) + (1 if s_second > self.params.max_car / 2 else 0))
 
         # Compute for each possible new state: probability, reward, and value of the new state, then apply the formula
         sum_prob_i = 0
